@@ -1,0 +1,19 @@
+{
+  "name": "web-crawler-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node main.js",
+    "test2": "node crawlRaw.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.5.0"
+  },
+  "dependencies": {
+    "jsdom": "^21.1.1"
+  }
+}
