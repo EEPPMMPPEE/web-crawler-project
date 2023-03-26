@@ -15,7 +15,7 @@ function fetchPref() {
 
 function normalizeURL(url) {
   const myURL = new URL(url);
-  return `${myURL.hostname}${myURL.pathname}`;
+  return `${myURL.protocol}//${myURL.hostname}${myURL.pathname}`;
 }
 
 async function fetchResp(domain) {
@@ -53,7 +53,7 @@ function relURLsToAbsol(baseUrl) {
     const validBase = new URL(baseUrl);
     try {
       const absolUrl = new URL(url.href, validBase).href;
-      return absolUrl;
+      return normalizeURL(absolUrl);
     } catch (err) {
       console.log(`Ploho: ${url}\nDomain: ${validBase}`);
       return normalizeURL(url.href);
@@ -66,9 +66,7 @@ function getURLsFromHTML(htmlBody, baseURL) {
   const URLtoAbsol = relURLsToAbsol(baseURL);
   const dom = new JSDOM(htmlBody);
   const HTMLAnchorElementsArray = dom.window.document.getElementsByTagName("a");
-  const myArray = [
-    ...new Set(Array.from(HTMLAnchorElementsArray).map(URLtoAbsol)),
-  ];
+  const myArray = Array.from(HTMLAnchorElementsArray).map(URLtoAbsol);
   return myArray;
 }
 
@@ -91,17 +89,17 @@ async function crawlPage(baseURL, currentURL, pages) {
   pages.activeFuncArray.push("true");
   const resp = await fetchResp(currentURL).catch((badPage) => {
     pages.visitedPages.push(badPage);
+    pages.badPages.push(badPage);
   });
   const textBody = await respTextBody(resp);
   const URLsArray = getURLsFromHTML(textBody, baseURL);
   for await (let url of URLsArray) {
     let isValidPage =
-      !pages.URLsArray.includes(url) &&
       new URL(url).host === new URL(baseURL).host &&
-      url !== baseURL;
+      !pages.badPages.includes(url);
     if (isValidPage) {
       pages.URLsArray.push(url);
-      console.log(`new page found:\n\t ${url}`);
+      console.log(`page found:\n\t ${url}`);
     }
   }
   for await (let newCurrentURL of pages.URLsArray) {
@@ -118,7 +116,7 @@ async function crawlPage(baseURL, currentURL, pages) {
 
 async function programmFinishCheck(pages) {
   if (!pages.activeFuncArray.length) {
-    return pages.URLsArray.length;
+    return printReport;
   } else {
     console.log(`Not all func finished yet: ${pages.activeFuncArray.length}`);
     await sleep(1000);
@@ -126,16 +124,50 @@ async function programmFinishCheck(pages) {
   }
 }
 
+function postExecuteDataFormat(pages) {
+  const arrToKeyCountArrayFunc = (arr) => {
+    const keyCountArr = [];
+    const countObj = new Map(
+      [...new Set(arr)].map((x) => [x, arr.filter((y) => y === x).length])
+    );
+    countObj.forEach((val, key) => {
+      keyCountArr.push({ url: key, count: val });
+    });
+    return keyCountArr;
+  };
+
+  const specialSortingFunc = (specArray) => {
+    return specArray.sort(function (a, b) {
+      return b.count - a.count;
+    });
+  };
+  filteredURLsArray = pages.URLsArray.filter(
+    (url) => !pages.badPages.includes(url)
+  );
+  return specialSortingFunc(arrToKeyCountArrayFunc(filteredURLsArray));
+}
+
+function printReport(pages) {
+  console.log("report is starting...\n");
+  const formatedData = postExecuteDataFormat(pages);
+  for (let data of formatedData) {
+    console.log(`Found ${data.count} internal links to ${data.url}`);
+  }
+}
+
+//---------------------------------------------------------------
+
 async function main() {
   const pages = {
     URLsArray: [],
     visitedPages: [],
+    badPages: [],
     activeFuncArray: [],
   };
   const domain = await inputFunc();
   await crawlPage(domain, domain, pages);
-  programmFinishCheck(pages).then((count) => {
-    console.log(`Number of pages is: ${count}`);
+  programmFinishCheck(pages).then((printReport) => {
+    printReport(pages);
   });
 }
 main();
