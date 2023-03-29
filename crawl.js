@@ -42,7 +42,6 @@ async function fetchResp(url) {
         `Bad content-type: ${response.headers.get("content-type")}`
       );
     }
-    console.log(await response.text());
     return response;
   } catch (err) {
     console.log(`url: ${url} raise Error "${err.message}"`);
