@@ -1,16 +1,16 @@
 {
   "name": "web-crawler-project",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "0.4",
+  "description": "JavaScript application that generates an internal links report for any website on the internet by crawling each page of the site.",
+  "author": "EEPPMMPPEE",
+  "license": "ISC",
+  "engines": {
+    "node": "=18.7.0"
+  },
   "scripts": {
     "start": "node main.js"
   },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "jest": "^29.5.0"
-  },
+  ,
   "dependencies": {
     "jsdom": "^21.1.1"
   }
