@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "start": "node main.js",
-    "test2": "node crawlRaw.js"
+    "start": "node main.js"
   },
   "author": "",
   "license": "ISC",
