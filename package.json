@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node main.js"
   },
-  ,
   "dependencies": {
     "jsdom": "^21.1.1"
   }

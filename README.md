@@ -12,7 +12,8 @@ A study project. May not be the best option for this task.
 ## Pre-requisites
 
 ```sh
-nvm 0.39.3
+~nvm 9.6.2
+node 18.7.0
 ```
 
 ## Install
