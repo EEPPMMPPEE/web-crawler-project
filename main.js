@@ -2,6 +2,7 @@
   "Web Crawler"
   JavaScript application that generates an "internal links" report for any website on the internet by crawling each page of the site.
   Alpha version.
+  Tested on: "https://blog.boot.dev"
 */
 
 const {
@@ -19,7 +20,7 @@ async function main() {
     activeFuncArray: [],
   };
   const domain = await inputFunc();
-  await crawlPage(domain, domain, pages);
+  crawlPage(domain, domain, pages);
   programFinishCheck(pages).then(() => {
     printReport(pages);
   });
